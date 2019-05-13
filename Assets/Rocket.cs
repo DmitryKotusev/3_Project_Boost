@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Rocket : MonoBehaviour
 {
+    public float rotationSpeed;
     Rigidbody rigidBody;
     // Start is called before the first frame update
     void Start()
@@ -27,11 +28,11 @@ public class Rocket : MonoBehaviour
 
         if (Input.GetKey(KeyCode.A))
         {
-            // rigidBody.transform.RotateAroundLocal()
+            transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            // right
+            transform.Rotate(Vector3.forward, -rotationSpeed * Time.deltaTime);
         }
     }
 }
