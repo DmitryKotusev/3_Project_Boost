@@ -5,7 +5,10 @@ using UnityEngine;
 
 public class Rocket : MonoBehaviour
 {
-    public float rotationSpeed;
+    [SerializeField]
+    float rcsThrust = 100f;
+    [SerializeField]
+    float mainThrust = 20f;
     Rigidbody rigidBody;
     AudioSource audioSource;
     // Start is called before the first frame update
@@ -18,18 +21,59 @@ public class Rocket : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ProcessInput();
+        Thrust();
+        Rotate();
     }
 
-    private void ProcessInput()
+    private void OnCollisionEnter(Collision collision)
     {
-        if(Input.GetKey(KeyCode.Space))
+        switch(collision.gameObject.tag)
         {
-            rigidBody.AddRelativeForce(Vector3.up);
+            case "Friendly":
+                {
+                    Debug.Log("Ok");
+                    break;
+                }
+            case "Fuel":
+                {
+                    Debug.Log("Fuel");
+                    break;
+                }
+            default:
+                {
+                    Debug.Log("Dead");
+                    break;
+                }
+        }
+    }
+
+    private void Rotate()
+    {
+        if (Input.GetKey(KeyCode.A))
+        {
+            //rigidBody.freezeRotation = true;
+            float rotationThisFrame = rcsThrust * Time.deltaTime;
+            transform.Rotate(Vector3.forward * rotationThisFrame);
+            //rigidBody.freezeRotation = false;
+        }
+        else if (Input.GetKey(KeyCode.D))
+        {
+            //rigidBody.freezeRotation = true;
+            float rotationThisFrame = rcsThrust * Time.deltaTime;
+            transform.Rotate(Vector3.forward * (-rotationThisFrame));
+            //rigidBody.freezeRotation = false;
+        }
+    }
+
+    private void Thrust()
+    {
+        if (Input.GetKey(KeyCode.Space))
+        {
+            rigidBody.AddRelativeForce(Vector3.up * mainThrust);
             if (!audioSource.isPlaying)
             {
                 audioSource.Play();
-            }      
+            }
         }
         else
         {
@@ -37,15 +81,6 @@ public class Rocket : MonoBehaviour
             {
                 audioSource.Stop();
             }
-        }
-
-        if (Input.GetKey(KeyCode.A))
-        {
-            transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);
-        }
-        else if (Input.GetKey(KeyCode.D))
-        {
-            transform.Rotate(Vector3.forward, -rotationSpeed * Time.deltaTime);
         }
     }
 }
