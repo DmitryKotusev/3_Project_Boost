@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Rocket : MonoBehaviour
 {
@@ -11,7 +9,16 @@ public class Rocket : MonoBehaviour
     float mainThrust = 20f;
     Rigidbody rigidBody;
     AudioSource audioSource;
-    // Start is called before the first frame update
+    
+    enum State
+    {
+        ALIVE,
+        DYING,
+        TRANSCENDING
+    }
+
+    State state = State.ALIVE;
+
     void Start()
     {
         rigidBody = GetComponent<Rigidbody>();
@@ -21,12 +28,19 @@ public class Rocket : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Thrust();
-        Rotate();
+        if (state == State.ALIVE)
+        {
+            Thrust();
+            Rotate();
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (state != State.ALIVE)
+        {
+            return;
+        }
         switch(collision.gameObject.tag)
         {
             case "Friendly":
@@ -34,17 +48,38 @@ public class Rocket : MonoBehaviour
                     Debug.Log("Ok");
                     break;
                 }
-            case "Fuel":
+            case "Finish":
                 {
-                    Debug.Log("Fuel");
+                    Debug.Log("Finish");
+                    rigidBody.freezeRotation = false;
+                    rigidBody.drag = 0;
+                    state = State.TRANSCENDING;
+                    Invoke("LoadNextScene", 1f);
                     break;
                 }
             default:
                 {
-                    Debug.Log("Dead");
+                    rigidBody.freezeRotation = false;
+                    rigidBody.drag = 0;
+                    state = State.DYING;
+                    if (audioSource.isPlaying)
+                    {
+                        audioSource.Stop();
+                    }
+                    Invoke("LoadFirstScene", 1f);
                     break;
                 }
         }
+    }
+
+    private void LoadFirstScene()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+    private void LoadNextScene()
+    {
+        SceneManager.LoadScene(1);
     }
 
     private void Rotate()
