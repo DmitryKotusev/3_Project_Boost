@@ -20,7 +20,7 @@ public class Oscillator : MonoBehaviour
 
     void Update()
     {
-        float cycles = Time.time / period;
+        float cycles = period > Mathf.Epsilon ? Time.time / period : 0;
         float tau = Mathf.PI * 2;
         Vector3 offset = movementVector * (1 + Mathf.Sin(tau * cycles)) / 2;
         transform.position = startPos + offset;
