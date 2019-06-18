@@ -135,17 +135,17 @@ public class Rocket : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.A))
         {
-            //rigidBody.freezeRotation = true;
+            rigidBody.freezeRotation = true;
             float rotationThisFrame = rcsThrust * Time.deltaTime;
             transform.Rotate(Vector3.forward * rotationThisFrame);
-            //rigidBody.freezeRotation = false;
+            rigidBody.freezeRotation = false;
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            //rigidBody.freezeRotation = true;
+            rigidBody.freezeRotation = true;
             float rotationThisFrame = rcsThrust * Time.deltaTime;
             transform.Rotate(Vector3.forward * (-rotationThisFrame));
-            //rigidBody.freezeRotation = false;
+            rigidBody.freezeRotation = false;
         }
     }
 
@@ -157,12 +157,17 @@ public class Rocket : MonoBehaviour
         }
         else
         {
-            if (audioSource.isPlaying)
-            {
-                audioSource.Stop();
-            }
-            mainEngineParticles.Stop();
+            StopApplyingThrust();
         }
+    }
+
+    private void StopApplyingThrust()
+    {
+        if (audioSource.isPlaying)
+        {
+            audioSource.Stop();
+        }
+        mainEngineParticles.Stop();
     }
 
     private void ApplyThrust()
